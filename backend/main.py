@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routes import upload
+from backend.routes import upload, config
 
-app = FastAPI(title="文件上传服务", version="1.0.0")
+app = FastAPI(title="MindWeave AI助手", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,7 +13,8 @@ app.add_middleware(
 )
 
 app.include_router(upload.router, prefix="/api", tags=["文件上传"])
+app.include_router(config.router, prefix="/api", tags=["配置管理"])
 
 @app.get("/")
 def read_root():
-    return {"message": "欢迎使用文件上传服务"}
+    return {"message": "欢迎使用MindWeave AI助手"}
