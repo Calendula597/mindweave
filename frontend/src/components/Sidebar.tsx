@@ -9,6 +9,7 @@ interface SidebarProps {
 const sidebarItems: SidebarItem[] = [
   { id: 'chat', icon: '💬', label: '聊天' },
   { id: 'note', icon: '📝', label: '笔记' },
+  { id: 'files', icon: '📂', label: '文件管理' },
   { id: 'upload', icon: '📁', label: '文件上传' },
   { id: 'config', icon: '⚙️', label: '配置' },
 ];

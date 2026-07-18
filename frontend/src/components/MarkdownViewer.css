@@ -1,0 +1,229 @@
+/* Markdown预览器样式 */
+.markdown-viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.md-viewer-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  background: #fafbfc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.md-viewer-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.md-close-button {
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.md-close-button:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.md-viewer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* 标题样式 */
+.md-viewer-content h1,
+.md-viewer-content h2,
+.md-viewer-content h3,
+.md-viewer-content h4,
+.md-viewer-content h5,
+.md-viewer-content h6 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #222;
+}
+
+.md-viewer-content h1:first-child,
+.md-viewer-content h2:first-child,
+.md-viewer-content h3:first-child {
+  margin-top: 0;
+}
+
+.md-viewer-content h1 {
+  font-size: 28px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.md-viewer-content h2 {
+  font-size: 22px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.md-viewer-content h3 {
+  font-size: 18px;
+}
+
+.md-viewer-content h4 {
+  font-size: 16px;
+}
+
+/* 段落 */
+.md-viewer-content p {
+  margin-bottom: 12px;
+}
+
+/* 列表 */
+.md-viewer-content ul,
+.md-viewer-content ol {
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.md-viewer-content li {
+  margin-bottom: 6px;
+}
+
+.md-viewer-content ul ul,
+.md-viewer-content ol ol,
+.md-viewer-content ul ol,
+.md-viewer-content ol ul {
+  margin-top: 6px;
+}
+
+/* 代码块 */
+.md-viewer-content pre {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.md-viewer-content pre code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.md-viewer-content code {
+  background: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  color: #e83e8c;
+}
+
+.md-viewer-content pre code {
+  background: transparent;
+  padding: 0;
+  color: #d4d4d4;
+}
+
+/* 引用 */
+.md-viewer-content blockquote {
+  border-left: 4px solid #667eea;
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: #f8f9fa;
+  border-radius: 0 8px 8px 0;
+  color: #555;
+}
+
+.md-viewer-content blockquote p {
+  margin: 0;
+}
+
+/* 表格 */
+.md-table-wrapper {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.md-viewer-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.md-viewer-content th,
+.md-viewer-content td {
+  border: 1px solid #ddd;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.md-viewer-content th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.md-viewer-content tr:hover {
+  background: #f8f9fa;
+}
+
+/* 图片 */
+.md-viewer-content img.md-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 链接 */
+.md-viewer-content a {
+  color: #667eea;
+  text-decoration: none;
+  border-bottom: 1px dashed #667eea;
+}
+
+.md-viewer-content a:hover {
+  color: #764ba2;
+  border-bottom-color: #764ba2;
+}
+
+/* 水平线 */
+.md-viewer-content hr {
+  border: none;
+  height: 1px;
+  background: #eee;
+  margin: 24px 0;
+}
+
+/* 删除线 */
+.md-viewer-content del {
+  color: #888;
+}
+
+/* 任务列表 */
+.md-viewer-content input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* 脚注 */
+.md-viewer-content .footnotes {
+  font-size: 14px;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}

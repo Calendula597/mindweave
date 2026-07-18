@@ -4,6 +4,7 @@ import { ChatPanel } from './components/ChatPanel';
 import { UploadPanel } from './components/UploadPanel';
 import { ConfigPanel } from './components/ConfigPanel';
 import { NoteEditor } from './components/NoteEditor';
+import { FilePanel } from './components/FilePanel';
 import { ViewMode } from './types';
 import './App.css';
 
@@ -18,6 +19,8 @@ function App() {
         return <ChatPanel />;
       case 'note':
         return <NoteEditor />;
+      case 'files':
+        return <FilePanel />;
       case 'upload':
         return <UploadPanel />;
       case 'config':

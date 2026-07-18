@@ -26,4 +26,4 @@ export type SidebarItem = {
   label: string;
 };
 
-export type ViewMode = 'chat' | 'upload' | 'config' | 'note';
+export type ViewMode = 'chat' | 'upload' | 'config' | 'note' | 'files';
