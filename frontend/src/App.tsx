@@ -1,62 +1,36 @@
 import { useState } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { ChatPanel } from './components/ChatPanel';
-import { UploadPanel } from './components/UploadPanel';
-import { ConfigPanel } from './components/ConfigPanel';
-import { NoteEditor } from './components/NoteEditor';
-import { FilePanel } from './components/FilePanel';
-import { ViewMode } from './types';
+import { KBSidebar } from './components/KBSidebar';
+import { KBContent } from './components/KBContent';
 import './App.css';
 
 function App() {
-  const [activeView, setActiveView] = useState<ViewMode>('chat');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mainCollapsed, setMainCollapsed] = useState(false);
+  const [activeKB, setActiveKB] = useState<string | null>(null);
 
-  const renderPanel = () => {
-    switch (activeView) {
-      case 'chat':
-        return <ChatPanel />;
-      case 'note':
-        return <NoteEditor />;
-      case 'files':
-        return <FilePanel />;
-      case 'upload':
-        return <UploadPanel />;
-      case 'config':
-        return <ConfigPanel />;
-      default:
-        return <ChatPanel />;
-    }
+  const handleRefresh = () => {
+    // 刷新逻辑（如果需要）
   };
 
   return (
-    <div className="app-container">
-      <button
-        className={`collapse-button sidebar-collapse ${sidebarCollapsed ? 'expanded' : ''}`}
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        title={sidebarCollapsed ? '展开侧边栏' : '折叠侧边栏'}
-      >
-        {sidebarCollapsed ? '▶' : '◀'}
-      </button>
-      
-      <Sidebar 
-        activeView={activeView} 
-        onViewChange={setActiveView}
-        collapsed={sidebarCollapsed}
+    <div className="app-container kb-app">
+      <KBSidebar
+        activeKB={activeKB}
+        onSelectKB={setActiveKB}
+        onRefresh={handleRefresh}
       />
       
-      <main className={`main-content ${mainCollapsed ? 'collapsed' : ''}`}>
-        {renderPanel()}
+      <main className="kb-main">
+        {activeKB ? (
+          <KBContent kbName={activeKB} />
+        ) : (
+          <div className="kb-welcome">
+            <div className="kb-welcome-content">
+              <h1>欢迎使用 MindWeave</h1>
+              <p>选择左侧的知识库开始管理您的文档</p>
+              <p className="kb-welcome-hint">或者点击左上角的 + 创建新的知识库</p>
+            </div>
+          </div>
+        )}
       </main>
-      
-      <button
-        className={`collapse-button main-collapse ${mainCollapsed ? 'expanded' : ''}`}
-        onClick={() => setMainCollapsed(!mainCollapsed)}
-        title={mainCollapsed ? '展开主面板' : '折叠主面板'}
-      >
-        {mainCollapsed ? '◀' : '▶'}
-      </button>
     </div>
   );
 }
