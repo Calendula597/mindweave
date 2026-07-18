@@ -26,6 +26,12 @@
   font-weight: 600;
 }
 
+.kb-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.kb-settings-btn,
 .kb-add-btn {
   padding: 8px;
   border: none;
@@ -39,6 +45,7 @@
   justify-content: center;
 }
 
+.kb-settings-btn:hover,
 .kb-add-btn:hover {
   background: rgba(102, 126, 234, 0.3);
   transform: scale(1.05);

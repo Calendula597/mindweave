@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit3, BookOpen, Folder } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Folder, Settings } from 'lucide-react';
+import { LLMConfigModal } from './LLMConfigModal';
 import './KBSidebar.css';
 
 const API_BASE = 'http://localhost:8000/api/kb';
@@ -21,6 +22,7 @@ export function KBSidebar({ activeKB, onSelectKB, onRefresh }: KBSidebarProps) {
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showConfigModal, setShowConfigModal] = useState(false);
   const [newKBName, setNewKBName] = useState('');
   const [creating, setCreating] = useState(false);
 
@@ -100,13 +102,22 @@ export function KBSidebar({ activeKB, onSelectKB, onRefresh }: KBSidebarProps) {
           <BookOpen size={20} />
           <span>知识库</span>
         </div>
-        <button
-          className="kb-add-btn"
-          onClick={() => setShowCreateModal(true)}
-          title="新建知识库"
-        >
-          <Plus size={18} />
-        </button>
+        <div className="kb-header-actions">
+          <button
+            className="kb-settings-btn"
+            onClick={() => setShowConfigModal(true)}
+            title="LLM配置"
+          >
+            <Settings size={18} />
+          </button>
+          <button
+            className="kb-add-btn"
+            onClick={() => setShowCreateModal(true)}
+            title="新建知识库"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
       </div>
 
       {/* 知识库列表 */}
@@ -171,6 +182,11 @@ export function KBSidebar({ activeKB, onSelectKB, onRefresh }: KBSidebarProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* LLM配置弹窗 */}
+      {showConfigModal && (
+        <LLMConfigModal onClose={() => setShowConfigModal(false)} />
       )}
     </div>
   );
