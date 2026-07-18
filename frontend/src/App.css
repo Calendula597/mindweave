@@ -526,3 +526,179 @@ html, body, #root {
   padding: 0;
   flex: none;
 }
+
+/* 笔记编辑器样式 */
+.note-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 16px;
+  margin: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.editor-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  background: #fafbfc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.editor-header .save-button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.editor-header .save-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.editor-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.editor-content .mdxeditor {
+  height: 100%;
+  border: none;
+}
+
+.editor-content .mdxeditor-content-root {
+  padding: 0;
+}
+
+.editor-content .mdxeditor-toolbar {
+  border-bottom: 1px solid #eee;
+  background: #fafbfc;
+  padding: 8px 12px;
+}
+
+.editor-content .mdxeditor-toolbar button {
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.editor-content .mdxeditor-toolbar button:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.editor-content .mdxeditor-toolbar button.active {
+  background: rgba(102, 126, 234, 0.15);
+  color: #667eea;
+}
+
+.editor-content .mdxeditor-content-root {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.editor-content .mdxeditor-content-root h1,
+.editor-content .mdxeditor-content-root h2,
+.editor-content .mdxeditor-content-root h3 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.editor-content .mdxeditor-content-root h1 {
+  font-size: 28px;
+}
+
+.editor-content .mdxeditor-content-root h2 {
+  font-size: 22px;
+}
+
+.editor-content .mdxeditor-content-root h3 {
+  font-size: 18px;
+}
+
+.editor-content .mdxeditor-content-root p {
+  margin-bottom: 12px;
+}
+
+.editor-content .mdxeditor-content-root pre {
+  background: #f5f7fa;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.editor-content .mdxeditor-content-root code {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+}
+
+.editor-content .mdxeditor-content-root table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.editor-content .mdxeditor-content-root th,
+.editor-content .mdxeditor-content-root td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.editor-content .mdxeditor-content-root th {
+  background: #fafbfc;
+  font-weight: 600;
+}
+
+.editor-content .mdxeditor-content-root blockquote {
+  border-left: 4px solid #667eea;
+  padding-left: 16px;
+  margin: 12px 0;
+  color: #666;
+  font-style: italic;
+}
+
+.editor-content .mdxeditor-content-root ul,
+.editor-content .mdxeditor-content-root ol {
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.editor-content .mdxeditor-content-root img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+.editor-content .mdxeditor-content-root a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.editor-content .mdxeditor-content-root a:hover {
+  text-decoration: underline;
+}

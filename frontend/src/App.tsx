@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar';
 import { ChatPanel } from './components/ChatPanel';
 import { UploadPanel } from './components/UploadPanel';
 import { ConfigPanel } from './components/ConfigPanel';
+import { NoteEditor } from './components/NoteEditor';
 import { ViewMode } from './types';
 import './App.css';
 
@@ -15,6 +16,8 @@ function App() {
     switch (activeView) {
       case 'chat':
         return <ChatPanel />;
+      case 'note':
+        return <NoteEditor />;
       case 'upload':
         return <UploadPanel />;
       case 'config':
