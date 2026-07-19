@@ -31,7 +31,7 @@
   gap: 8px;
 }
 
-.kb-settings-btn,
+.kb-global-config-btn,
 .kb-add-btn {
   padding: 8px;
   border: none;
@@ -45,10 +45,51 @@
   justify-content: center;
 }
 
-.kb-settings-btn:hover,
+.kb-global-config-btn:hover,
 .kb-add-btn:hover {
   background: rgba(102, 126, 234, 0.3);
   transform: scale(1.05);
+}
+
+/* 主页区域 */
+.kb-home-section {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.kb-home-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kb-home-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.kb-home-btn.active {
+  background: rgba(102, 126, 234, 0.2);
+  color: #fff;
+}
+
+/* 知识库列表标题 */
+.kb-list-title {
+  padding: 12px 16px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* 列表 */
@@ -147,6 +188,103 @@
 .kb-delete-btn:hover {
   background: rgba(255, 77, 79, 0.2);
   color: #ff4d4f;
+}
+
+/* 编辑名称按钮 */
+.kb-item-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.kb-item:hover .kb-item-actions {
+  opacity: 1;
+}
+
+.kb-edit-name-btn {
+  padding: 6px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kb-edit-name-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+}
+
+/* 知识库LLM配置按钮 */
+.kb-kb-config-btn {
+  padding: 6px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kb-kb-config-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+}
+
+/* 编辑表单 */
+.kb-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.kb-edit-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid rgba(102, 126, 234, 0.5);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.kb-edit-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.kb-edit-btn {
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.kb-edit-btn.confirm {
+  background: rgba(82, 196, 26, 0.2);
+  color: #52c41a;
+}
+
+.kb-edit-btn.confirm:hover {
+  background: rgba(82, 196, 26, 0.3);
+}
+
+.kb-edit-btn.cancel {
+  background: rgba(255, 77, 79, 0.2);
+  color: #ff4d4f;
+}
+
+.kb-edit-btn.cancel:hover {
+  background: rgba(255, 77, 79, 0.3);
 }
 
 /* 弹窗 */

@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Upload, Trash2, Eye, Download, Plus, FileText, X, Settings } from 'lucide-react';
+import { Upload, Trash2, Eye, Download, Plus, FileText, X, Settings, Save, Sparkles } from 'lucide-react';
 import { PDFViewer } from './PDFViewer';
 import { MarkdownViewer } from './MarkdownViewer';
 import { KBConfigModal } from './KBConfigModal';
+import { NoteEditor } from './NoteEditor';
+import { PolishPanel } from './PolishPanel';
 import './KBContent.css';
 
 const API_BASE = 'http://localhost:8000/api/kb';
@@ -25,10 +27,19 @@ export function KBContent({ kbName }: KBContentProps) {
   const [uploading, setUploading] = useState(false);
   const [previewFile, setPreviewFile] = useState<KBFile | null>(null);
   const [mdContent, setMdContent] = useState('');
-  const [showCreateNote, setShowCreateNote] = useState(false);
   const [showKBConfig, setShowKBConfig] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [newNoteName, setNewNoteName] = useState('');
-  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  
+  // 编辑器状态
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingContent, setEditingContent] = useState('');
+  const [editingFile, setEditingFile] = useState<string | null>(null);
+  
+  // 润色状态
+  const [showPolish, setShowPolish] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 获取文件列表
@@ -89,30 +100,68 @@ export function KBContent({ kbName }: KBContentProps) {
     }
   };
 
-  // 创建笔记
-  const handleCreateNote = async () => {
-    if (!newNoteName.trim()) return;
+  // 新建笔记 - 打开编辑器
+  const handleNewNote = () => {
+    setEditingContent('');
+    setEditingFile(null);
+    setIsEditing(true);
+  };
 
-    setCreating(true);
+  // 编辑现有笔记
+  const handleEditNote = async (file: KBFile) => {
     try {
       const response = await fetch(
-        `${API_BASE}/${encodeURIComponent(kbName)}/create-note?filename=${encodeURIComponent(newNoteName.trim())}&content=`,
-        { method: 'POST' }
+        `${API_BASE}/${encodeURIComponent(kbName)}/preview/${encodeURIComponent(file.filename)}`
+      );
+      const data = await response.json();
+      setEditingContent(data.content || '');
+      setEditingFile(file.filename);
+      setIsEditing(true);
+    } catch (error) {
+      console.error('获取文件内容失败:', error);
+      alert('获取文件内容失败');
+    }
+  };
+
+  // 保存笔记
+  const handleSaveNote = async () => {
+    if (!newNoteName.trim()) return;
+
+    const filename = newNoteName.trim().endsWith('.md') 
+      ? newNoteName.trim() 
+      : `${newNoteName.trim()}.md`;
+
+    setSaving(true);
+    try {
+      const response = await fetch(
+        `${API_BASE}/${encodeURIComponent(kbName)}/save/${encodeURIComponent(filename)}?content=${encodeURIComponent(editingContent)}`,
+        { method: 'PUT' }
       );
 
       if (response.ok) {
         await fetchFiles();
-        setShowCreateNote(false);
+        setShowSaveDialog(false);
         setNewNoteName('');
+        setIsEditing(false);
+        setEditingContent('');
+        setEditingFile(null);
       } else {
         const error = await response.json();
-        alert(error.detail || '创建失败');
+        alert(error.detail || '保存失败');
       }
     } catch (error) {
-      console.error('创建笔记失败:', error);
-      alert('创建失败，请重试');
+      console.error('保存笔记失败:', error);
+      alert('保存失败，请重试');
     } finally {
-      setCreating(false);
+      setSaving(false);
+    }
+  };
+
+  // 接受润色结果
+  const handleAcceptPolish = (polishedContent: string, title?: string) => {
+    setEditingContent(polishedContent);
+    if (title && !editingFile) {
+      setNewNoteName(title);
     }
   };
 
@@ -178,6 +227,93 @@ export function KBContent({ kbName }: KBContentProps) {
     return '📄';
   };
 
+  // 编辑器视图
+  if (isEditing) {
+    return (
+      <div className="kb-content">
+        <div className="kb-editor-header">
+          <h2 className="kb-content-title">
+            {editingFile ? `编辑: ${editingFile}` : '新建笔记'}
+          </h2>
+          <div className="kb-content-actions">
+            <button 
+              className="kb-action-btn polish-btn" 
+              onClick={() => setShowPolish(true)}
+              title="AI润色"
+            >
+              <Sparkles size={16} />
+              AI润色
+            </button>
+            <button 
+              className="kb-action-btn save-btn" 
+              onClick={() => setShowSaveDialog(true)}
+              title="保存"
+            >
+              <Save size={16} />
+              保存
+            </button>
+            <button 
+              className="kb-action-btn cancel-btn" 
+              onClick={() => {
+                setIsEditing(false);
+                setEditingContent('');
+                setEditingFile(null);
+              }}
+            >
+              <X size={16} />
+              取消
+            </button>
+          </div>
+        </div>
+        <div className="kb-editor-container">
+          <NoteEditor 
+            initialContent={editingContent}
+            onContentChange={setEditingContent}
+          />
+        </div>
+
+        {/* 润色面板 */}
+        {showPolish && (
+          <PolishPanel
+            content={editingContent}
+            kbName={kbName}
+            onAccept={handleAcceptPolish}
+            onClose={() => setShowPolish(false)}
+          />
+        )}
+
+        {/* 保存对话框 */}
+        {showSaveDialog && (
+          <div className="kb-modal-overlay" onClick={() => setShowSaveDialog(false)}>
+            <div className="kb-modal" onClick={(e) => e.stopPropagation()}>
+              <h3>保存笔记</h3>
+              <input
+                type="text"
+                placeholder="输入笔记名称"
+                value={newNoteName}
+                onChange={(e) => setNewNoteName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveNote()}
+                autoFocus
+              />
+              <div className="kb-modal-actions">
+                <button className="kb-modal-cancel" onClick={() => setShowSaveDialog(false)}>
+                  取消
+                </button>
+                <button
+                  className="kb-modal-confirm"
+                  onClick={handleSaveNote}
+                  disabled={!newNoteName.trim() || saving}
+                >
+                  {saving ? '保存中...' : '保存'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="kb-content">
       {/* 头部 */}
@@ -188,7 +324,7 @@ export function KBContent({ kbName }: KBContentProps) {
             <Settings size={16} />
             LLM配置
           </button>
-          <button className="kb-action-btn" onClick={() => setShowCreateNote(true)}>
+          <button className="kb-action-btn" onClick={handleNewNote}>
             <Plus size={16} />
             新建笔记
           </button>
@@ -231,6 +367,15 @@ export function KBContent({ kbName }: KBContentProps) {
                   </div>
                 </div>
                 <div className="kb-file-actions">
+                  {file.file_type === 'markdown' && (
+                    <button
+                      className="kb-file-action-btn edit"
+                      onClick={() => handleEditNote(file)}
+                      title="编辑"
+                    >
+                      ✏️
+                    </button>
+                  )}
                   <button
                     className="kb-file-action-btn preview"
                     onClick={() => handlePreview(file)}
@@ -276,35 +421,6 @@ export function KBContent({ kbName }: KBContentProps) {
                 onClose={() => setPreviewFile(null)}
               />
             )}
-          </div>
-        </div>
-      )}
-
-      {/* 创建笔记弹窗 */}
-      {showCreateNote && (
-        <div className="kb-modal-overlay" onClick={() => setShowCreateNote(false)}>
-          <div className="kb-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>新建笔记</h3>
-            <input
-              type="text"
-              placeholder="输入笔记名称"
-              value={newNoteName}
-              onChange={(e) => setNewNoteName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreateNote()}
-              autoFocus
-            />
-            <div className="kb-modal-actions">
-              <button className="kb-modal-cancel" onClick={() => setShowCreateNote(false)}>
-                取消
-              </button>
-              <button
-                className="kb-modal-confirm"
-                onClick={handleCreateNote}
-                disabled={!newNoteName.trim() || creating}
-              >
-                {creating ? '创建中...' : '创建'}
-              </button>
-            </div>
           </div>
         </div>
       )}

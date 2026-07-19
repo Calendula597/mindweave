@@ -91,7 +91,10 @@ export function LLMConfigModal({ onClose }: LLMConfigModalProps) {
     <div className="llm-config-overlay" onClick={onClose}>
       <div className="llm-config-modal" onClick={(e) => e.stopPropagation()}>
         <div className="llm-config-header">
-          <h2>LLM 配置</h2>
+          <div>
+            <h2>全局 LLM 配置</h2>
+            <p className="llm-config-subtitle">负责记住偏好、统筹学习进度、闲聊</p>
+          </div>
           <button className="llm-config-close" onClick={onClose}>×</button>
         </div>
 

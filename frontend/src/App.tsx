@@ -28,6 +28,7 @@ function App() {
         activeKB={activeKB}
         onSelectKB={handleSelectKB}
         onRefresh={handleRefresh}
+        onHomeClick={handleBackHome}
       />
       
       <main className="kb-main">

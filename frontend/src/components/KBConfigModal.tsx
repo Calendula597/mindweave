@@ -95,8 +95,11 @@ export function KBConfigModal({ kbName, onClose }: KBConfigModalProps) {
     <div className="kb-config-overlay" onClick={onClose}>
       <div className="kb-config-modal" onClick={(e) => e.stopPropagation()}>
         <div className="kb-config-header">
-          <h2>知识库 LLM 配置</h2>
-          <div className="kb-config-title-hint">{kbName}</div>
+          <div>
+            <h2>知识库 LLM 配置</h2>
+            <p className="kb-config-kbname">{kbName}</p>
+            <p className="kb-config-subtitle">负责知识点提取、测验生成、答疑、润色</p>
+          </div>
           <button className="kb-config-close" onClick={onClose}>×</button>
         </div>
 
