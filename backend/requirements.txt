@@ -1,3 +1,8 @@
-fastapi==0.111.0
-uvicorn==0.30.1
-python-multipart==0.0.9
+fastapi>=0.111.0
+uvicorn>=0.30.1
+python-multipart>=0.0.9
+pyyaml>=6.0
+httpx>=0.24.0
+pydantic>=2.0.0
+markitdown>=0.0.1a2
+pdfplumber>=0.10.0

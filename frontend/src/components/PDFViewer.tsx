@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X } from 'lucide-react';
 
-// 设置 PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// 设置 PDF.js worker - 使用本地worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 interface PDFViewerProps {
   fileUrl: string;
@@ -26,7 +26,11 @@ export function PDFViewer({ fileUrl, onClose }: PDFViewerProps) {
       setError(null);
       
       try {
-        const loadingTask = pdfjsLib.getDocument({ url: fileUrl });
+        const loadingTask = pdfjsLib.getDocument({ 
+          url: fileUrl,
+          cMapUrl: '/cmaps/',
+          cMapPacked: true,
+        });
         const pdf = await loadingTask.promise;
         setPdfDoc(pdf);
         setTotalPages(pdf.numPages);
@@ -113,7 +117,19 @@ export function PDFViewer({ fileUrl, onClose }: PDFViewerProps) {
 
   return (
     <div className="pdf-viewer">
-      {/* 工具栏 */}
+      {/* 关闭按钮 - 右上角 */}
+      {onClose && (
+        <button className="pdf-close-btn" onClick={onClose} title="关闭">
+          <X size={24} />
+        </button>
+      )}
+
+      {/* PDF内容区域 */}
+      <div className="pdf-content" ref={containerRef}>
+        {loading && <div className="pdf-loading">加载中...</div>}
+      </div>
+
+      {/* 底部工具栏 */}
       <div className="pdf-toolbar">
         <div className="pdf-nav">
           <button
@@ -124,7 +140,7 @@ export function PDFViewer({ fileUrl, onClose }: PDFViewerProps) {
             <ChevronLeft size={20} />
           </button>
           <span className="page-info">
-            {loading ? '加载中...' : `${currentPage} / ${totalPages}`}
+            {loading ? '...' : `${currentPage} / ${totalPages}`}
           </span>
           <button
             onClick={goToNextPage}
@@ -135,6 +151,8 @@ export function PDFViewer({ fileUrl, onClose }: PDFViewerProps) {
           </button>
         </div>
         
+        <div className="pdf-divider"></div>
+
         <div className="pdf-zoom">
           <button onClick={zoomOut} title="缩小">
             <ZoomOut size={18} />
@@ -144,17 +162,6 @@ export function PDFViewer({ fileUrl, onClose }: PDFViewerProps) {
             <ZoomIn size={18} />
           </button>
         </div>
-
-        {onClose && (
-          <button className="pdf-close" onClick={onClose} title="关闭">
-            <X size={20} />
-          </button>
-        )}
-      </div>
-
-      {/* PDF内容区域 */}
-      <div className="pdf-content" ref={containerRef}>
-        {loading && <div className="pdf-loading">加载中...</div>}
       </div>
     </div>
   );

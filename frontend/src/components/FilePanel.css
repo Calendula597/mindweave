@@ -236,20 +236,47 @@
 
 /* PDF预览器样式 */
 .pdf-viewer {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   background: #2c2c2c;
 }
 
+/* 关闭按钮 - 右上角 */
+.pdf-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.pdf-close-btn:hover {
+  background: rgba(255, 77, 79, 0.8);
+  transform: scale(1.1);
+}
+
+/* 底部工具栏 */
 .pdf-toolbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 12px 20px;
-  background: #1e1e1e;
-  border-bottom: 1px solid #333;
+  gap: 32px;
+  padding: 16px 24px;
+  background: linear-gradient(to top, rgba(30, 30, 30, 0.98), rgba(45, 45, 45, 0.95));
+  border-top: 1px solid #444;
 }
 
 .pdf-nav,
@@ -259,12 +286,18 @@
   gap: 12px;
 }
 
+.pdf-divider {
+  width: 1px;
+  height: 24px;
+  background: #555;
+}
+
 .pdf-toolbar button {
-  padding: 8px;
+  padding: 10px;
   border: none;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -273,7 +306,8 @@
 }
 
 .pdf-toolbar button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(102, 126, 234, 0.5);
+  transform: scale(1.05);
 }
 
 .pdf-toolbar button:disabled {
@@ -285,8 +319,12 @@
 .zoom-level {
   color: #fff;
   font-size: 14px;
-  min-width: 80px;
+  font-weight: 500;
+  min-width: 70px;
   text-align: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
 }
 
 .pdf-content {
@@ -296,11 +334,16 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  background: linear-gradient(180deg, #1a1a1a 0%, #2c2c2c 100%);
 }
 
 .pdf-loading {
   color: #fff;
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .pdf-viewer-error {
@@ -311,11 +354,7 @@
   height: 100%;
   color: #fff;
   gap: 16px;
-}
-
-.pdf-close {
-  position: absolute;
-  right: 20px;
+  background: #2c2c2c;
 }
 
 /* 滚动条样式 */

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from backend.config import load_config, save_config
+from config import load_config, save_config
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routes import upload, config, convert, files, knowledge_base, learning
+from routes import upload, config, convert, files, knowledge_base, learning
 
 app = FastAPI(title="MindWeave AI助手", version="1.0.0")
 
