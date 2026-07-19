@@ -1,9 +1,10 @@
 """
 知识库管理路由
-提供知识库的创建、列表、删除、文件管理功能
+提供知识库的创建、列表、删除、文件管理、LLM配置管理功能
 """
 import os
 import shutil
+import yaml
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
@@ -21,6 +22,18 @@ KB_ROOT.mkdir(exist_ok=True)
 # 允许的文件类型
 ALLOWED_EXTENSIONS = {".pdf", ".md", ".markdown"}
 
+# 默认LLM配置模板
+DEFAULT_KB_LLM_CONFIG = {
+    "llm": {
+        "api_key": "",
+        "model": "gpt-4o-mini",
+        "base_url": "https://api.openai.com/v1",
+        "temperature": 0.7,
+        "max_tokens": 4096,
+        "system_prompt": "你是一个专业的学习助手，负责帮助用户学习和掌握知识库中的内容。"
+    }
+}
+
 
 class KnowledgeBase(BaseModel):
     """知识库模型"""
@@ -28,6 +41,7 @@ class KnowledgeBase(BaseModel):
     file_count: int
     created_time: str
     updated_time: str
+    has_llm_config: bool = False
 
 
 class KnowledgeBaseList(BaseModel):
@@ -51,6 +65,16 @@ class KBFileList(BaseModel):
     total: int
 
 
+class KBLLMConfig(BaseModel):
+    """知识库LLM配置模型"""
+    api_key: str = ""
+    model: str = "gpt-4o-mini"
+    base_url: str = "https://api.openai.com/v1"
+    temperature: float = 0.7
+    max_tokens: int = 4096
+    system_prompt: str = ""
+
+
 def get_file_type(filename: str) -> str:
     """根据文件扩展名获取文件类型"""
     ext = Path(filename).suffix.lower()
@@ -70,12 +94,33 @@ def format_size(size: int) -> str:
     return f"{size:.2f} TB"
 
 
+def get_kb_config_path(kb_name: str) -> Path:
+    """获取知识库配置文件路径"""
+    return KB_ROOT / kb_name / "config.yaml"
+
+
+def load_kb_config(kb_name: str) -> dict:
+    """加载知识库LLM配置"""
+    config_path = get_kb_config_path(kb_name)
+    if config_path.exists():
+        with open(config_path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f) or {}
+    return {}
+
+
+def save_kb_config(kb_name: str, config: dict):
+    """保存知识库LLM配置"""
+    config_path = get_kb_config_path(kb_name)
+    with open(config_path, "w", encoding="utf-8") as f:
+        yaml.dump(config, f, allow_unicode=True, default_flow_style=False)
+
+
 # ==================== 知识库管理 ====================
 
 @router.post("/create")
 async def create_knowledge_base(name: str):
     """
-    创建新的知识库
+    创建新的知识库（自动创建LLM配置文件）
     """
     # 验证名称
     if not name or not name.strip():
@@ -91,10 +136,15 @@ async def create_knowledge_base(name: str):
     # 创建目录
     try:
         kb_path.mkdir(parents=True)
+        
+        # 创建默认LLM配置文件
+        save_kb_config(name, DEFAULT_KB_LLM_CONFIG)
+        
         return {
             "message": "知识库创建成功",
             "name": name,
-            "path": str(kb_path)
+            "path": str(kb_path),
+            "config_created": True
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"创建知识库失败: {str(e)}")
@@ -114,8 +164,11 @@ async def list_knowledge_bases():
         if not kb_path.is_dir():
             continue
         
-        # 统计文件数量
-        file_count = sum(1 for f in kb_path.iterdir() if f.is_file())
+        # 统计文件数量（排除config.yaml）
+        file_count = sum(1 for f in kb_path.iterdir() if f.is_file() and f.name != "config.yaml")
+        
+        # 检查是否有LLM配置
+        has_config = get_kb_config_path(kb_path.name).exists()
         
         # 获取创建和修改时间
         stat = kb_path.stat()
@@ -126,7 +179,8 @@ async def list_knowledge_bases():
             name=kb_path.name,
             file_count=file_count,
             created_time=created_time,
-            updated_time=updated_time
+            updated_time=updated_time,
+            has_llm_config=has_config
         ))
     
     # 按更新时间降序排序
@@ -173,6 +227,63 @@ async def rename_knowledge_base(old_name: str, new_name: str):
         raise HTTPException(status_code=500, detail=f"重命名失败: {str(e)}")
 
 
+# ==================== 知识库LLM配置管理 ====================
+
+@router.get("/{kb_name}/config")
+async def get_kb_llm_config(kb_name: str):
+    """
+    获取知识库的LLM配置
+    """
+    kb_path = KB_ROOT / kb_name
+    
+    if not kb_path.exists():
+        raise HTTPException(status_code=404, detail="知识库不存在")
+    
+    config = load_kb_config(kb_name)
+    llm_config = config.get("llm", {})
+    
+    return {
+        "api_key": llm_config.get("api_key", ""),
+        "model": llm_config.get("model", "gpt-4o-mini"),
+        "base_url": llm_config.get("base_url", "https://api.openai.com/v1"),
+        "temperature": llm_config.get("temperature", 0.7),
+        "max_tokens": llm_config.get("max_tokens", 4096),
+        "system_prompt": llm_config.get("system_prompt", "")
+    }
+
+
+@router.post("/{kb_name}/config")
+async def update_kb_llm_config(kb_name: str, config: KBLLMConfig):
+    """
+    更新知识库的LLM配置
+    """
+    kb_path = KB_ROOT / kb_name
+    
+    if not kb_path.exists():
+        raise HTTPException(status_code=404, detail="知识库不存在")
+    
+    # 加载现有配置
+    existing_config = load_kb_config(kb_name)
+    
+    # 更新LLM配置
+    existing_config["llm"] = {
+        "api_key": config.api_key,
+        "model": config.model,
+        "base_url": config.base_url,
+        "temperature": config.temperature,
+        "max_tokens": config.max_tokens,
+        "system_prompt": config.system_prompt
+    }
+    
+    save_kb_config(kb_name, existing_config)
+    
+    return {
+        "message": "配置更新成功",
+        "kb_name": kb_name,
+        "config": existing_config["llm"]
+    }
+
+
 # ==================== 文件管理 ====================
 
 @router.get("/{kb_name}/files", response_model=KBFileList)
@@ -188,6 +299,10 @@ async def list_kb_files(kb_name: str):
     files = []
     for file_path in kb_path.iterdir():
         if not file_path.is_file():
+            continue
+        
+        # 跳过配置文件
+        if file_path.name == "config.yaml":
             continue
         
         file_ext = file_path.suffix.lower()

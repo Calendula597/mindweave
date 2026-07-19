@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Upload, Trash2, Eye, Download, Plus, FileText, X } from 'lucide-react';
+import { Upload, Trash2, Eye, Download, Plus, FileText, X, Settings } from 'lucide-react';
 import { PDFViewer } from './PDFViewer';
 import { MarkdownViewer } from './MarkdownViewer';
+import { KBConfigModal } from './KBConfigModal';
 import './KBContent.css';
 
 const API_BASE = 'http://localhost:8000/api/kb';
@@ -25,6 +26,7 @@ export function KBContent({ kbName }: KBContentProps) {
   const [previewFile, setPreviewFile] = useState<KBFile | null>(null);
   const [mdContent, setMdContent] = useState('');
   const [showCreateNote, setShowCreateNote] = useState(false);
+  const [showKBConfig, setShowKBConfig] = useState(false);
   const [newNoteName, setNewNoteName] = useState('');
   const [creating, setCreating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -182,6 +184,10 @@ export function KBContent({ kbName }: KBContentProps) {
       <div className="kb-content-header">
         <h2 className="kb-content-title">{kbName}</h2>
         <div className="kb-content-actions">
+          <button className="kb-action-btn config-btn" onClick={() => setShowKBConfig(true)} title="知识库LLM配置">
+            <Settings size={16} />
+            LLM配置
+          </button>
           <button className="kb-action-btn" onClick={() => setShowCreateNote(true)}>
             <Plus size={16} />
             新建笔记
@@ -301,6 +307,14 @@ export function KBContent({ kbName }: KBContentProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 知识库LLM配置弹窗 */}
+      {showKBConfig && (
+        <KBConfigModal
+          kbName={kbName}
+          onClose={() => setShowKBConfig(false)}
+        />
       )}
     </div>
   );
