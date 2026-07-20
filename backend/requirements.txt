@@ -6,3 +6,12 @@ httpx>=0.24.0
 pydantic>=2.0.0
 markitdown>=0.0.1a2
 pdfplumber>=0.10.0
+
+# RAG 向量检索 - PostgreSQL + PGVector
+psycopg2-binary>=2.9.0
+pgvector>=0.2.0
+openai>=1.0.0
+tiktoken>=0.5.0
+
+# 文本处理
+langchain-text-splitters>=0.0.1

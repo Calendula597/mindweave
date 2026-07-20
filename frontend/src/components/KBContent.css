@@ -7,9 +7,56 @@
   overflow: hidden;
 }
 
+/* Tab栏 */
+.kb-tabs {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.kb-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.kb-tab:hover {
+  color: #667eea;
+}
+
+.kb-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.kb-tab-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+/* 内容区域 */
+.kb-content-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 /* 头部 */
 .kb-content-header {
-  padding: 20px 24px;
+  padding: 16px 24px;
   background: #fff;
   border-bottom: 1px solid #eee;
   display: flex;

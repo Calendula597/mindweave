@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Upload, Trash2, Eye, Download, Plus, FileText, X, Settings, Save, Sparkles } from 'lucide-react';
+import { Upload, Trash2, Eye, Download, Plus, FileText, X, Settings, Save, Sparkles, MessageSquare, FolderOpen } from 'lucide-react';
 import { PDFViewer } from './PDFViewer';
 import { MarkdownViewer } from './MarkdownViewer';
 import { KBConfigModal } from './KBConfigModal';
 import { NoteEditor } from './NoteEditor';
 import { PolishPanel } from './PolishPanel';
+import { ChatPanel } from './ChatPanel';
 import './KBContent.css';
 
 const API_BASE = 'http://localhost:8000/api/kb';
@@ -21,7 +22,10 @@ interface KBContentProps {
   kbName: string;
 }
 
+type TabType = 'files' | 'chat';
+
 export function KBContent({ kbName }: KBContentProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('files');
   const [files, setFiles] = useState<KBFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -227,6 +231,46 @@ export function KBContent({ kbName }: KBContentProps) {
     return '📄';
   };
 
+  // 聊天模式
+  if (activeTab === 'chat') {
+    return (
+      <div className="kb-content">
+        <div className="kb-tabs">
+          <button 
+            className={`kb-tab ${activeTab === 'files' ? 'active' : ''}`}
+            onClick={() => setActiveTab('files')}
+          >
+            <FolderOpen size={16} />
+            文件
+          </button>
+          <button 
+            className={`kb-tab ${activeTab === 'chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >
+            <MessageSquare size={16} />
+            AI问答
+          </button>
+          <div className="kb-tab-actions">
+            <button className="kb-action-btn config-btn" onClick={() => setShowKBConfig(true)} title="知识库LLM配置">
+              <Settings size={16} />
+            </button>
+          </div>
+        </div>
+        <div className="kb-content-body">
+          <ChatPanel kbName={kbName} />
+        </div>
+        
+        {/* 知识库LLM配置弹窗 */}
+        {showKBConfig && (
+          <KBConfigModal
+            kbName={kbName}
+            onClose={() => setShowKBConfig(false)}
+          />
+        )}
+      </div>
+    );
+  }
+
   // 编辑器视图
   if (isEditing) {
     return (
@@ -314,94 +358,116 @@ export function KBContent({ kbName }: KBContentProps) {
     );
   }
 
+  // 文件管理模式
   return (
     <div className="kb-content">
-      {/* 头部 */}
-      <div className="kb-content-header">
-        <h2 className="kb-content-title">{kbName}</h2>
-        <div className="kb-content-actions">
+      {/* Tab栏 */}
+      <div className="kb-tabs">
+        <button 
+          className={`kb-tab ${activeTab === 'files' ? 'active' : ''}`}
+          onClick={() => setActiveTab('files')}
+        >
+          <FolderOpen size={16} />
+          文件
+        </button>
+        <button 
+          className={`kb-tab ${activeTab === 'chat' ? 'active' : ''}`}
+          onClick={() => setActiveTab('chat')}
+        >
+          <MessageSquare size={16} />
+          AI问答
+        </button>
+        <div className="kb-tab-actions">
           <button className="kb-action-btn config-btn" onClick={() => setShowKBConfig(true)} title="知识库LLM配置">
             <Settings size={16} />
-            LLM配置
           </button>
-          <button className="kb-action-btn" onClick={handleNewNote}>
-            <Plus size={16} />
-            新建笔记
-          </button>
-          <label className="kb-action-btn upload-btn">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,.md,.markdown"
-              onChange={handleUpload}
-              disabled={uploading}
-              style={{ display: 'none' }}
-            />
-            <Upload size={16} />
-            {uploading ? '上传中...' : '上传文件'}
-          </label>
         </div>
       </div>
 
-      {/* 文件列表 */}
-      <div className="kb-file-list-container">
-        {loading ? (
-          <div className="kb-loading-text">加载中...</div>
-        ) : files.length === 0 ? (
-          <div className="kb-empty-content">
-            <FileText size={48} className="kb-empty-icon" />
-            <p>知识库为空</p>
-            <p className="kb-empty-hint">上传文件或创建笔记开始使用</p>
+      {/* 文件管理内容 */}
+      <div className="kb-content-body">
+        {/* 头部 */}
+        <div className="kb-content-header">
+          <div className="kb-content-actions">
+            <button className="kb-action-btn" onClick={handleNewNote}>
+              <Plus size={16} />
+              新建笔记
+            </button>
+            <label className="kb-action-btn upload-btn">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.md,.markdown"
+                onChange={handleUpload}
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+              <Upload size={16} />
+              {uploading ? '上传中...' : '上传文件'}
+            </label>
           </div>
-        ) : (
-          <ul className="kb-file-list">
-            {files.map((file) => (
-              <li key={file.filename} className="kb-file-item">
-                <div className="kb-file-info">
-                  <span className="kb-file-icon">{getFileIcon(file.file_type)}</span>
-                  <div className="kb-file-details">
-                    <p className="kb-file-name">{file.filename}</p>
-                    <p className="kb-file-meta">
-                      {formatSize(file.file_size)} • {file.updated_time}
-                    </p>
+        </div>
+
+        {/* 文件列表 */}
+        <div className="kb-file-list-container">
+          {loading ? (
+            <div className="kb-loading-text">加载中...</div>
+          ) : files.length === 0 ? (
+            <div className="kb-empty-content">
+              <FileText size={48} className="kb-empty-icon" />
+              <p>知识库为空</p>
+              <p className="kb-empty-hint">上传文件或创建笔记开始使用</p>
+            </div>
+          ) : (
+            <ul className="kb-file-list">
+              {files.map((file) => (
+                <li key={file.filename} className="kb-file-item">
+                  <div className="kb-file-info">
+                    <span className="kb-file-icon">{getFileIcon(file.file_type)}</span>
+                    <div className="kb-file-details">
+                      <p className="kb-file-name">{file.filename}</p>
+                      <p className="kb-file-meta">
+                        {formatSize(file.file_size)} • {file.updated_time}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="kb-file-actions">
-                  {file.file_type === 'markdown' && (
+                  <div className="kb-file-actions">
+                    {file.file_type === 'markdown' && (
+                      <button
+                        className="kb-file-action-btn edit"
+                        onClick={() => handleEditNote(file)}
+                        title="编辑"
+                      >
+                        ✏️
+                      </button>
+                    )}
                     <button
-                      className="kb-file-action-btn edit"
-                      onClick={() => handleEditNote(file)}
-                      title="编辑"
+                      className="kb-file-action-btn preview"
+                      onClick={() => handlePreview(file)}
+                      title="预览"
                     >
-                      ✏️
+                      <Eye size={16} />
                     </button>
-                  )}
-                  <button
-                    className="kb-file-action-btn preview"
-                    onClick={() => handlePreview(file)}
-                    title="预览"
-                  >
-                    <Eye size={16} />
-                  </button>
-                  <button
-                    className="kb-file-action-btn download"
-                    onClick={() => handleDownload(file.filename)}
-                    title="下载"
-                  >
-                    <Download size={16} />
-                  </button>
-                  <button
-                    className="kb-file-action-btn delete"
-                    onClick={() => handleDelete(file.filename)}
-                    title="删除"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+                    <button
+                      className="kb-file-action-btn download"
+                      onClick={() => handleDownload(file.filename)}
+                      title="下载"
+                    >
+                      <Download size={16} />
+                    </button>
+                    <button
+                      className="kb-file-action-btn delete"
+                      onClick={() => handleDelete(file.filename)}
+                      title="删除"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       {/* 预览模态框 */}

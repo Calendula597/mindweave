@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import upload, config, convert, files, knowledge_base, learning, polish
+from routes import upload, config, convert, files, knowledge_base, learning, polish, knowledge, chat
 
 app = FastAPI(title="MindWeave AI助手", version="1.0.0")
 
@@ -19,6 +19,8 @@ app.include_router(files.router, tags=["文件管理"])
 app.include_router(knowledge_base.router, tags=["知识库管理"])
 app.include_router(learning.router, tags=["学习任务"])
 app.include_router(polish.router, tags=["LLM润色"])
+app.include_router(knowledge.router, tags=["知识处理"])
+app.include_router(chat.router, tags=["智能问答"])
 
 @app.get("/")
 def read_root():
